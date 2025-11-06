@@ -85,6 +85,7 @@ See [TEST_COVERAGE.md](./TEST_COVERAGE.md) for detailed test documentation.
 #### Features
 
 - **Markdown Input**: Paste your feature breakdown in markdown format with pipe-delimited tables
+- **Flexible Parser**: Automatically detects and handles multiple markdown formats
 - **Automatic Parsing**: Extracts steps and increments from your markdown
 - **Grid Layout**: Automatically positions sticky notes in an organized grid
 - **Visual Breakdown**: Creates one sticky note per increment with ID and title
@@ -100,26 +101,35 @@ See [TEST_COVERAGE.md](./TEST_COVERAGE.md) for detailed test documentation.
 
 #### Markdown Format
 
-Your markdown should include:
+The parser is **flexible** and supports multiple formats:
 
-1. A **Steps Overview Table** with columns: #, Step ID, Name, Layer
-2. Multiple **Step sections** with increment tables
-
-Example:
-
+**Format 1: Original Format**
 ```markdown
-## Steps Overview
-
 | # | Step ID | Name | Layer |
 |---|---------|------|-------|
 | 1 | 1.1 | Sidebar Text Input | UI |
-
-## Step 1.1: Sidebar Text Input
 
 | # | Increment | Effort | Value | Risk |
 |---|-----------|--------|-------|------|
 | 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |
 ```
+
+**Format 2: Step # Header**
+```markdown
+| Step # | Name | Layer | Increments | Effort Range |
+|--------|------|-------|-----------|--------------|
+| 1.1 | Sidebar Text Input Component | UI | 6 | 1-2 days |
+
+| # | Increment | Effort | Value | Risk | Strategy | Notes |
+|----|-----------|--------|-------|------|----------|-------|
+| 1.1.1 ⭐ | Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 | Minimal→Enhanced | Notes |
+```
+
+The parser automatically:
+- Detects step IDs in any column
+- Handles increments with IDs and titles in separate or combined columns
+- Removes emojis and markdown formatting
+- Links increments to their parent steps
 
 See `example-markdown.md` for a complete example.
 

@@ -45,8 +45,8 @@ function parseTableRow(row: string): string[] {
 }
 
 /**
- * Parse steps overview table
- * Increment 2.2.1
+ * Parse steps overview table with flexible format detection
+ * Increment 2.2.1 - Enhanced version
  * @param tableString The steps table markdown
  * @returns Array of Step objects
  */
@@ -56,22 +56,60 @@ export function parseStepsOverview(tableString: string): Step[] {
 
   if (lines.length < 3) return steps; // Need at least header, separator, and one data row
 
+  // Parse header to find column indices
+  const headerCells = parseTableRow(lines[0]);
+
+  // Find Step ID column (flexible detection)
+  let stepIdIndex = -1;
+  let nameIndex = -1;
+
+  headerCells.forEach((header, index) => {
+    const lowerHeader = header.toLowerCase();
+    // Look for step id column
+    if (lowerHeader.includes('step') && (lowerHeader.includes('#') || lowerHeader.includes('id'))) {
+      stepIdIndex = index;
+    }
+    // Look for name column
+    if (lowerHeader.includes('name') && !lowerHeader.includes('step')) {
+      nameIndex = index;
+    }
+  });
+
   // Skip header and separator lines
   const dataLines = lines.slice(2);
 
   for (const line of dataLines) {
     const cells = parseTableRow(line);
 
-    if (cells.length >= 3) {
-      // Assuming format: | # | Step ID | Name | ... |
-      const stepId = cells[1]; // Second column is Step ID
-      const stepName = cells[2]; // Third column is Name
+    // Try detected indices first
+    if (stepIdIndex >= 0 && nameIndex >= 0 && cells.length > Math.max(stepIdIndex, nameIndex)) {
+      const stepId = cells[stepIdIndex];
+      const stepName = cells[nameIndex];
 
-      if (stepId && stepName) {
+      // Validate that stepId looks like a step ID (e.g., "1.1", "2.1")
+      if (stepId && stepName && /^\d+\.\d+$/.test(stepId.trim())) {
         steps.push({
-          id: stepId,
-          name: stepName,
+          id: stepId.trim(),
+          name: stepName.trim(),
         });
+        continue;
+      }
+    }
+
+    // Fallback: scan all cells for step ID pattern
+    for (let i = 0; i < cells.length - 1; i++) {
+      const potentialId = cells[i].trim();
+      // Check if this cell looks like a step ID
+      if (/^\d+\.\d+$/.test(potentialId)) {
+        // Next cell should be the name
+        const stepName = cells[i + 1]?.trim();
+        if (stepName) {
+          steps.push({
+            id: potentialId,
+            name: stepName,
+          });
+          break;
+        }
       }
     }
   }
@@ -80,8 +118,8 @@ export function parseStepsOverview(tableString: string): Step[] {
 }
 
 /**
- * Parse increment table for a specific step
- * Increment 2.3.1
+ * Parse increment table for a specific step with flexible format detection
+ * Increment 2.3.1 - Enhanced version
  * @param tableString The increment table markdown
  * @param stepId The parent step ID
  * @returns Array of Increment objects
@@ -92,6 +130,16 @@ export function parseIncrements(tableString: string, stepId: string): Increment[
 
   if (lines.length < 3) return increments; // Need at least header, separator, and one data row
 
+  // Parse header to understand format
+  const headerCells = parseTableRow(lines[0]);
+  let incrementColumnIndex = -1;
+
+  headerCells.forEach((header, index) => {
+    if (header.toLowerCase().includes('increment')) {
+      incrementColumnIndex = index;
+    }
+  });
+
   // Skip header and separator lines
   const dataLines = lines.slice(2);
 
@@ -99,17 +147,50 @@ export function parseIncrements(tableString: string, stepId: string): Increment[
     const cells = parseTableRow(line);
 
     if (cells.length >= 2) {
-      // Assuming format: | # | Increment | Effort | Value | Risk |
-      const incrementText = cells[1]; // Second column is Increment (ID + title)
+      let incrementId = '';
+      let incrementTitle = '';
 
-      // Extract increment ID (e.g., "1.1.1") and title
-      // Format is usually like "**1.1.1** - Title here"
-      const match = incrementText.match(/\*?\*?(\d+\.\d+\.\d+)\*?\*?\s*-?\s*(.+)/);
+      // Try format 1: ID and title in separate columns (e.g., "1.1.1 ⭐" | "Title")
+      // Check first cell for increment ID pattern
+      const firstCell = cells[0].trim();
+      const idMatch = firstCell.match(/(\d+\.\d+\.\d+)/);
 
-      if (match) {
-        const incrementId = match[1];
-        const incrementTitle = match[2].trim();
+      if (idMatch && cells.length >= 2) {
+        incrementId = idMatch[1];
+        incrementTitle = cells[1].trim();
+      } else {
+        // Try format 2: ID and title in same column (e.g., "**1.1.1** - Title")
+        // Look in increment column or second column
+        const targetCell = incrementColumnIndex >= 0 ? cells[incrementColumnIndex] : cells[1];
+        const combined = targetCell.trim();
 
+        // Try multiple patterns
+        const patterns = [
+          /\*?\*?(\d+\.\d+\.\d+)\*?\*?\s*-\s*(.+)/, // **1.1.1** - Title
+          /(\d+\.\d+\.\d+)\s*[⭐★✨]?\s*-?\s*(.+)/, // 1.1.1 ⭐ - Title
+          /(\d+\.\d+\.\d+)\s+(.+)/, // 1.1.1 Title
+        ];
+
+        for (const pattern of patterns) {
+          const match = combined.match(pattern);
+          if (match && match[2]?.trim()) {
+            incrementId = match[1];
+            incrementTitle = match[2].trim();
+            break;
+          }
+        }
+      }
+
+      // Clean up title (remove markdown formatting, emojis from end)
+      if (incrementTitle) {
+        incrementTitle = incrementTitle
+          .replace(/\*\*/g, '') // Remove bold markers
+          .replace(/[⭐★✨]+\s*$/, '') // Remove trailing stars/emojis
+          .trim();
+      }
+
+      // Validate and add increment
+      if (incrementId && incrementTitle && /^\d+\.\d+\.\d+$/.test(incrementId)) {
         increments.push({
           id: incrementId,
           title: incrementTitle,
@@ -124,6 +205,7 @@ export function parseIncrements(tableString: string, stepId: string): Increment[
 
 /**
  * Identify which tables are steps tables vs increment tables
+ * Enhanced to handle various formats
  * @param tables Array of table strings
  * @returns Object with steps table and increment tables
  */
@@ -134,11 +216,28 @@ function categorizeTablesalt(tables: string[]): { stepsTable: string | null; inc
   for (const table of tables) {
     const firstLine = table.split('\n')[0].toLowerCase();
 
-    // Steps table usually has "step id" or "step" column
-    if (firstLine.includes('step') && !firstLine.includes('increment')) {
+    // Check if this is a steps overview table
+    // Look for "step #", "step id", or combination of "step" + "name" + "layer"
+    const isStepsTable =
+      firstLine.includes('step #') ||
+      firstLine.includes('step id') ||
+      (firstLine.includes('step') && firstLine.includes('name') && firstLine.includes('layer'));
+
+    // Check if this is an increment table
+    // Has "increment" column but not "step #" or "step id"
+    const isIncrementTable =
+      firstLine.includes('increment') &&
+      !firstLine.includes('step #') &&
+      !firstLine.includes('step id');
+
+    if (isStepsTable && !stepsTable) {
+      // Take first steps table found
       stepsTable = table;
-    } else {
-      // Assume it's an increment table
+    } else if (isIncrementTable || (!isStepsTable && !stepsTable)) {
+      // It's an increment table or can't determine (assume increment)
+      incrementTables.push(table);
+    } else if (!isStepsTable && !isIncrementTable) {
+      // Can't categorize, assume increment table
       incrementTables.push(table);
     }
   }
