@@ -4,8 +4,8 @@
 import * as React from 'react';
 import { validateMarkdown } from '../services/validation';
 import { parseMarkdown } from '../services/markdownParser';
-import { calculatePositions } from '../services/layoutEngine';
-import { createStickiesFromIncrements, zoomToStickies } from '../services/miroAPI';
+import { calculateAllBoardItems } from '../services/layoutEngine';
+import { createAllBoardItems, zoomToStickies } from '../services/miroAPI';
 
 const PLACEHOLDER_TEXT = 'Paste your feature breakdown markdown here...\n\nExample format:\n\n| # | Step ID | Name | Layer |\n|---|---------|------|-------|\n| 1 | 1.1 | Sidebar Text Input | UI |\n\n## Step 1.1: Sidebar Text Input\n\n| # | Increment | Effort | Value | Risk |\n|---|-----------|--------|-------|------|\n| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |';
 
@@ -47,23 +47,24 @@ export const BreakdownForm: React.FC = () => {
         return;
       }
 
-      // Calculate positions
-      const positionedIncrements = calculatePositions(parsed.steps, parsed.increments);
-      console.log('Positioned increments:', positionedIncrements);
+      // Calculate positions for all board items (step headers + increments)
+      const boardItems = calculateAllBoardItems(parsed.steps, parsed.increments);
+      console.log('Board items:', boardItems);
 
-      // Create stickies
-      const stickies = await createStickiesFromIncrements(positionedIncrements);
+      // Create all stickies (headers + increments)
+      const stickies = await createAllBoardItems(boardItems);
       console.log('Created stickies:', stickies);
 
       // Zoom to show all stickies
       await zoomToStickies(stickies);
 
-      // Clear form on success
-      setMarkdown('');
+      // Keep markdown in textarea (don't clear)
       setIsLoading(false);
 
       // Show success message
-      alert(`Successfully created ${stickies.length} sticky notes!`);
+      const stepHeaders = boardItems.filter(item => item.type === 'step-header').length;
+      const increments = boardItems.filter(item => item.type === 'increment').length;
+      alert(`Successfully created ${stickies.length} sticky notes!\n${stepHeaders} step headers + ${increments} increments`);
     } catch (err) {
       console.error('Error creating breakdown:', err);
       setError('Failed to create breakdown. Please try again.');

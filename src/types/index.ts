@@ -38,4 +38,12 @@ export interface ParsedMarkdown {
 export interface StickyNoteData {
   content: string;
   position?: { x: number; y: number };
+  type?: 'step-header' | 'increment'; // Type of sticky
+}
+
+export interface BoardItem {
+  content: string;
+  x: number;
+  y: number;
+  type: 'step-header' | 'increment';
 }

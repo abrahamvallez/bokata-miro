@@ -7,6 +7,8 @@ import {
   mapIncrementsToGrid,
   gridToPixelCoordinates,
   calculatePositions,
+  calculateStepHeaderPositions,
+  calculateAllBoardItems,
 } from './layoutEngine';
 import { Step, Increment } from '../types';
 
@@ -326,6 +328,116 @@ describe('Layout Engine - 4.2.1', () => {
       // Check for unique positions (no overlaps)
       const positions = result.map(inc => `${inc.x},${inc.y}`);
       const uniquePositions = new Set(positions);
+      expect(uniquePositions.size).toBe(positions.length);
+    });
+  });
+
+  describe('Step Header Positioning', () => {
+    it('should calculate positions for step headers', () => {
+      // GIVEN: steps
+      const steps: Step[] = [
+        { id: '1.1', name: 'Step 1' },
+        { id: '1.2', name: 'Step 2' },
+        { id: '2.1', name: 'Step 3' },
+      ];
+
+      // WHEN: calculating step header positions
+      const headers = calculateStepHeaderPositions(steps);
+
+      // THEN: headers created for each step
+      expect(headers).toHaveLength(3);
+      headers.forEach((header, index) => {
+        expect(header.type).toBe('step-header');
+        expect(header.content).toContain(steps[index].id);
+        expect(header.content).toContain(steps[index].name);
+        expect(header.x).toBeLessThan(0); // Headers are to the left
+        expect(header.y).toBeGreaterThanOrEqual(0);
+      });
+    });
+
+    it('should position headers vertically aligned with increments', () => {
+      // GIVEN: steps
+      const steps: Step[] = [
+        { id: '1.1', name: 'Step 1' },
+        { id: '1.2', name: 'Step 2' },
+      ];
+
+      // WHEN: calculating positions
+      const headers = calculateStepHeaderPositions(steps);
+
+      // THEN: headers have same y-spacing as grid
+      const yDiff = headers[1].y - headers[0].y;
+      expect(yDiff).toBe(250); // CELL_HEIGHT + GRID_PADDING = 200 + 50
+    });
+  });
+
+  describe('calculateAllBoardItems', () => {
+    it('should create both step headers and increments', () => {
+      // GIVEN: steps and increments
+      const steps: Step[] = [
+        { id: '1.1', name: 'Step 1' },
+        { id: '1.2', name: 'Step 2' },
+      ];
+
+      const increments: Increment[] = [
+        { id: '1.1.1', title: 'Inc 1', stepId: '1.1' },
+        { id: '1.1.2', title: 'Inc 2', stepId: '1.1' },
+        { id: '1.2.1', title: 'Inc 3', stepId: '1.2' },
+      ];
+
+      // WHEN: calculating all board items
+      const boardItems = calculateAllBoardItems(steps, increments);
+
+      // THEN: contains both headers and increments
+      expect(boardItems.length).toBe(5); // 2 headers + 3 increments
+
+      const headers = boardItems.filter(item => item.type === 'step-header');
+      const incs = boardItems.filter(item => item.type === 'increment');
+
+      expect(headers).toHaveLength(2);
+      expect(incs).toHaveLength(3);
+    });
+
+    it('should format content correctly for each type', () => {
+      // GIVEN: data
+      const steps: Step[] = [{ id: '1.1', name: 'Test Step' }];
+      const increments: Increment[] = [
+        { id: '1.1.1', title: 'Test Increment', stepId: '1.1' },
+      ];
+
+      // WHEN: creating board items
+      const boardItems = calculateAllBoardItems(steps, increments);
+
+      // THEN: content formatted correctly
+      const header = boardItems.find(item => item.type === 'step-header');
+      const increment = boardItems.find(item => item.type === 'increment');
+
+      expect(header.content).toContain('1.1');
+      expect(header.content).toContain('Test Step');
+
+      expect(increment.content).toContain('1.1.1');
+      expect(increment.content).toContain('Test Increment');
+    });
+
+    it('should position all items without overlaps', () => {
+      // GIVEN: multiple steps and increments
+      const steps: Step[] = [
+        { id: '1.1', name: 'Step 1' },
+        { id: '1.2', name: 'Step 2' },
+      ];
+
+      const increments: Increment[] = [
+        { id: '1.1.1', title: 'Inc 1', stepId: '1.1' },
+        { id: '1.2.1', title: 'Inc 2', stepId: '1.2' },
+      ];
+
+      // WHEN: calculating all positions
+      const boardItems = calculateAllBoardItems(steps, increments);
+
+      // THEN: no overlapping positions
+      const positions = boardItems.map(item => `${item.x},${item.y}`);
+      const uniquePositions = new Set(positions);
+
       expect(uniquePositions.size).toBe(positions.length);
     });
   });

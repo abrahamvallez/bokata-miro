@@ -88,7 +88,10 @@ See [TEST_COVERAGE.md](./TEST_COVERAGE.md) for detailed test documentation.
 - **Flexible Parser**: Automatically detects and handles multiple markdown formats
 - **Automatic Parsing**: Extracts steps and increments from your markdown
 - **Grid Layout**: Automatically positions sticky notes in an organized grid
+- **Step Headers**: Creates colored header stickies for each step in the first column
 - **Visual Breakdown**: Creates one sticky note per increment with ID and title
+- **Color Coding**: Blue stickies for step headers, yellow for increments
+- **Persistent Input**: Markdown text is preserved after creating the breakdown
 - **Zoom to Fit**: Automatically zooms to show all created stickies
 
 #### How to Use
