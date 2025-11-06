@@ -102,15 +102,74 @@ export async function createAllBoardItems(items: BoardItem[]): Promise<any[]> {
 }
 
 /**
- * Zoom to fit all created stickies on the board
- * @param stickies Array of sticky note objects
+ * Create a frame that wraps all the board items
+ * @param items Array of created board items
+ * @param featureTitle Title for the frame
+ * @returns Created frame object
  */
-export async function zoomToStickies(stickies: any[]): Promise<void> {
-  if (stickies.length === 0) return;
+export async function createFrame(items: any[], featureTitle: string): Promise<any> {
+  if (items.length === 0) return null;
 
   try {
-    await miro.board.viewport.zoomTo(stickies);
+    // Calculate bounds for all items
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const item of items) {
+      const bounds = item;
+      minX = Math.min(minX, bounds.x - (bounds.width || 250) / 2);
+      minY = Math.min(minY, bounds.y - (bounds.height || 150) / 2);
+      maxX = Math.max(maxX, bounds.x + (bounds.width || 250) / 2);
+      maxY = Math.max(maxY, bounds.y + (bounds.height || 150) / 2);
+    }
+
+    // Add padding around the content
+    const padding = 100;
+    const frameWidth = maxX - minX + padding * 2;
+    const frameHeight = maxY - minY + padding * 2;
+    const frameX = (minX + maxX) / 2;
+    const frameY = (minY + maxY) / 2;
+
+    // Create the frame
+    const frame = await miro.board.createFrame({
+      title: featureTitle,
+      x: frameX,
+      y: frameY,
+      width: frameWidth,
+      height: frameHeight,
+      style: {
+        fillColor: '#ffffff',
+      },
+    });
+
+    // Add all items to the frame
+    for (const item of items) {
+      try {
+        await frame.add(item);
+      } catch (err) {
+        console.error('Error adding item to frame:', err);
+      }
+    }
+
+    return frame;
   } catch (error) {
-    console.error('Error zooming to stickies:', error);
+    console.error('Error creating frame:', error);
+    throw error;
+  }
+}
+
+/**
+ * Zoom to fit all created stickies on the board
+ * @param items Array of board item objects (can include frame)
+ */
+export async function zoomToStickies(items: any[]): Promise<void> {
+  if (items.length === 0) return;
+
+  try {
+    await miro.board.viewport.zoomTo(items);
+  } catch (error) {
+    console.error('Error zooming to items:', error);
   }
 }

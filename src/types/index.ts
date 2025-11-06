@@ -31,6 +31,7 @@ export interface ValidationResult {
 }
 
 export interface ParsedMarkdown {
+  featureTitle: string; // Feature title from H1 heading
   steps: Step[];
   increments: Increment[];
 }
