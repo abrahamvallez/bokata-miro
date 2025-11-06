@@ -31,6 +31,7 @@ export interface ValidationResult {
 }
 
 export interface ParsedMarkdown {
+  featureTitle: string; // Feature title from H1 heading
   steps: Step[];
   increments: Increment[];
 }
@@ -45,5 +46,5 @@ export interface BoardItem {
   content: string;
   x: number;
   y: number;
-  type: 'step-header' | 'increment';
+  type: 'feature-title' | 'step-header' | 'increment';
 }

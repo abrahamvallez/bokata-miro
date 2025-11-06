@@ -8,28 +8,61 @@ import { BreakdownForm } from './BreakdownForm';
 
 // Mock Miro SDK
 const mockCreateStickyNote = vi.fn();
+const mockCreateText = vi.fn();
+const mockCreateFrame = vi.fn();
 const mockZoomTo = vi.fn();
+const mockFrameAdd = vi.fn();
 
 beforeEach(() => {
   // Reset mocks before each test
   mockCreateStickyNote.mockClear();
+  mockCreateText.mockClear();
+  mockCreateFrame.mockClear();
   mockZoomTo.mockClear();
+  mockFrameAdd.mockClear();
 
   // Setup Miro mock
   global.miro = {
     board: {
       createStickyNote: mockCreateStickyNote,
+      createText: mockCreateText,
+      createFrame: mockCreateFrame,
       viewport: {
         zoomTo: mockZoomTo,
       },
     },
   } as any;
 
-  // Default successful response
+  // Default successful responses
   mockCreateStickyNote.mockResolvedValue({
     id: 'sticky-123',
     content: 'test',
+    x: 0,
+    y: 0,
+    width: 250,
+    height: 150,
   });
+
+  mockCreateText.mockResolvedValue({
+    id: 'text-123',
+    content: 'test',
+    x: 0,
+    y: 0,
+    width: 800,
+    height: 100,
+  });
+
+  mockCreateFrame.mockResolvedValue({
+    id: 'frame-123',
+    title: 'test',
+    x: 0,
+    y: 0,
+    width: 1000,
+    height: 1000,
+    add: mockFrameAdd,
+  });
+
+  mockFrameAdd.mockResolvedValue(true);
 });
 
 describe('BreakdownForm Component - 1.1.1, 1.2.1, 1.3.1', () => {

@@ -246,17 +246,40 @@ function categorizeTablesalt(tables: string[]): { stepsTable: string | null; inc
 }
 
 /**
+ * Extract feature title from markdown (first H1 heading)
+ * @param markdown The markdown string
+ * @returns Feature title or empty string if not found
+ */
+export function extractFeatureTitle(markdown: string): string {
+  const lines = markdown.split('\n');
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    // Match H1 heading: # Title
+    const h1Match = trimmedLine.match(/^#\s+(.+)$/);
+    if (h1Match && h1Match[1]) {
+      return h1Match[1].trim();
+    }
+  }
+
+  return 'Feature Breakdown'; // Default title if not found
+}
+
+/**
  * Parse entire markdown document
  * Combines all parsing functions
  * @param markdown The markdown string
- * @returns ParsedMarkdown object with steps and increments
+ * @returns ParsedMarkdown object with feature title, steps and increments
  */
 export function parseMarkdown(markdown: string): ParsedMarkdown {
+  // Extract feature title
+  const featureTitle = extractFeatureTitle(markdown);
+
   // Extract all tables
   const tables = extractTableStructure(markdown);
 
   if (tables.length === 0) {
-    return { steps: [], increments: [] };
+    return { featureTitle, steps: [], increments: [] };
   }
 
   // Categorize tables
@@ -289,6 +312,7 @@ export function parseMarkdown(markdown: string): ParsedMarkdown {
   }
 
   return {
+    featureTitle,
     steps,
     increments: allIncrements,
   };

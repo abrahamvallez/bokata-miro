@@ -1,21 +1,21 @@
 // Breakdown Form Component
 // Increments 1.1.1, 1.2.1, 1.3.1 - Textarea, validation, and submit button
 
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { validateMarkdown } from '../services/validation';
 import { parseMarkdown } from '../services/markdownParser';
 import { calculateAllBoardItems } from '../services/layoutEngine';
-import { createAllBoardItems, zoomToStickies } from '../services/miroAPI';
+import { createAllBoardItems, createFrame, zoomToStickies } from '../services/miroAPI';
 
 const PLACEHOLDER_TEXT = 'Paste your feature breakdown markdown here...\n\nExample format:\n\n| # | Step ID | Name | Layer |\n|---|---------|------|-------|\n| 1 | 1.1 | Sidebar Text Input | UI |\n\n## Step 1.1: Sidebar Text Input\n\n| # | Increment | Effort | Value | Risk |\n|---|-----------|--------|-------|------|\n| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |';
 
-export const BreakdownForm: React.FC = () => {
-  const [markdown, setMarkdown] = React.useState<string>('');
-  const [error, setError] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+export const BreakdownForm = () => {
+  const [markdown, setMarkdown] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Validate on input change
-  React.useEffect(() => {
+  useEffect(() => {
     if (markdown.length > 0) {
       const result = validateMarkdown(markdown);
       setError(result.error);
@@ -47,16 +47,24 @@ export const BreakdownForm: React.FC = () => {
         return;
       }
 
-      // Calculate positions for all board items (step headers + increments)
-      const boardItems = calculateAllBoardItems(parsed.steps, parsed.increments);
+      // Calculate positions for all board items (feature title + step headers + increments)
+      const boardItems = calculateAllBoardItems(
+        parsed.featureTitle,
+        parsed.steps,
+        parsed.increments
+      );
       console.log('Board items:', boardItems);
 
-      // Create all stickies (headers + increments)
-      const stickies = await createAllBoardItems(boardItems);
-      console.log('Created stickies:', stickies);
+      // Create all board items (title + headers + increments)
+      const items = await createAllBoardItems(boardItems);
+      console.log('Created items:', items);
 
-      // Zoom to show all stickies
-      await zoomToStickies(stickies);
+      // Create frame to wrap all items
+      const frame = await createFrame(items, parsed.featureTitle);
+      console.log('Created frame:', frame);
+
+      // Zoom to show the frame
+      await zoomToStickies(frame ? [frame] : items);
 
       // Keep markdown in textarea (don't clear)
       setIsLoading(false);
@@ -64,7 +72,7 @@ export const BreakdownForm: React.FC = () => {
       // Show success message
       const stepHeaders = boardItems.filter(item => item.type === 'step-header').length;
       const increments = boardItems.filter(item => item.type === 'increment').length;
-      alert(`Successfully created ${stickies.length} sticky notes!\n${stepHeaders} step headers + ${increments} increments`);
+      alert(`Successfully created breakdown!\nTitle: ${parsed.featureTitle}\n${stepHeaders} step headers + ${increments} increments`);
     } catch (err) {
       console.error('Error creating breakdown:', err);
       setError('Failed to create breakdown. Please try again.');

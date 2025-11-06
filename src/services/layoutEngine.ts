@@ -8,6 +8,7 @@ const CELL_WIDTH = 300; // Width of each grid cell in pixels
 const CELL_HEIGHT = 200; // Height of each grid cell in pixels
 const GRID_PADDING = 50; // Padding between cells
 const HEADER_COLUMN_OFFSET = -350; // X offset for step header column (to the left)
+const TITLE_Y_OFFSET = -250; // Y offset for feature title (above the grid)
 const START_X = 0; // Starting X position for increments
 const START_Y = 0; // Starting Y position
 
@@ -127,16 +128,26 @@ export function calculateStepHeaderPositions(steps: Step[]): BoardItem[] {
 }
 
 /**
- * Calculate positions for all board items (step headers + increments)
+ * Calculate positions for all board items (feature title + step headers + increments)
+ * @param featureTitle The feature title
  * @param steps Array of steps
  * @param increments Array of increments
  * @returns Array of all board items with positions and types
  */
 export function calculateAllBoardItems(
+  featureTitle: string,
   steps: Step[],
   increments: Increment[]
 ): BoardItem[] {
   const boardItems: BoardItem[] = [];
+
+  // Add feature title at the top center
+  boardItems.push({
+    content: featureTitle,
+    x: START_X,
+    y: TITLE_Y_OFFSET,
+    type: 'feature-title' as const,
+  });
 
   // Add step headers
   const stepHeaders = calculateStepHeaderPositions(steps);
