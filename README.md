@@ -25,26 +25,116 @@
   This generates a static output inside [`dist/`](./dist), which you can host on a static hosting
   service.
 
-### Folder structure
+### Testing
 
-<!-- The following tree structure is just an example -->
+The project includes a comprehensive test suite with **64 passing tests** covering all Walking Skeleton increments.
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+**Test Coverage:**
+- ✅ Validation service (10 tests)
+- ✅ Markdown parser (18 tests)
+- ✅ Sticky formatter (11 tests)
+- ✅ Layout engine (14 tests)
+- ✅ Integration tests (11 tests)
+
+See [TEST_COVERAGE.md](./TEST_COVERAGE.md) for detailed test documentation.
+
+### Folder structure
 
 ```
 .
 ├── src
 │  ├── assets
 │  │  └── style.css
-│  ├── app.tsx      // The code for the app lives here
-│  └── index.ts    // The code for the app entry point lives here
-├── app.html       // The app itself. It's loaded on the board inside the 'appContainer'
-└── index.html     // The app entry point. This is what you specify in the 'App URL' box in the Miro app settings
+│  ├── components
+│  │  └── BreakdownForm.tsx    // Main form component (UI)
+│  ├── services
+│  │  ├── validation.ts         // Markdown validation logic
+│  │  ├── markdownParser.ts     // Parse markdown tables
+│  │  ├── stickyFormatter.ts    // Format sticky note content
+│  │  ├── layoutEngine.ts       // Grid layout calculations
+│  │  └── miroAPI.ts            // Miro SDK integration
+│  ├── types
+│  │  └── index.ts              // TypeScript type definitions
+│  ├── app.tsx                  // Main app component
+│  └── index.ts                 // App entry point
+├── docs
+│  └── plan.md                  // Walking Skeleton development plan
+├── app.html                    // The app panel HTML
+├── index.html                  // The app entry point
+└── example-markdown.md         // Example markdown for testing
 ```
 
 ### About the app
 
-This sample app provides you with boilerplate setup and configuration that you can further customize to build your own app.
+**Miro Feature Breakdown Visualizer** - A Miro plugin that transforms markdown feature breakdowns into visual sticky note layouts on your board.
 
-<!-- describe shortly the purpose of the sample app -->
+#### Features
+
+- **Markdown Input**: Paste your feature breakdown in markdown format with pipe-delimited tables
+- **Flexible Parser**: Automatically detects and handles multiple markdown formats
+- **Automatic Parsing**: Extracts steps and increments from your markdown
+- **Grid Layout**: Automatically positions sticky notes in an organized grid
+- **Step Headers**: Creates colored header stickies for each step in the first column
+- **Visual Breakdown**: Creates one sticky note per increment with ID and title
+- **Color Coding**: Blue stickies for step headers, yellow for increments
+- **Persistent Input**: Markdown text is preserved after creating the breakdown
+- **Zoom to Fit**: Automatically zooms to show all created stickies
+
+#### How to Use
+
+1. Open the app in your Miro board (click the app icon in the toolbar)
+2. Paste your markdown feature breakdown into the textarea
+3. The app validates your markdown in real-time
+4. Click "Create Breakdown" to generate sticky notes
+5. View your visualized breakdown on the board!
+
+#### Markdown Format
+
+The parser is **flexible** and supports multiple formats:
+
+**Format 1: Original Format**
+```markdown
+| # | Step ID | Name | Layer |
+|---|---------|------|-------|
+| 1 | 1.1 | Sidebar Text Input | UI |
+
+| # | Increment | Effort | Value | Risk |
+|---|-----------|--------|-------|------|
+| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |
+```
+
+**Format 2: Step # Header**
+```markdown
+| Step # | Name | Layer | Increments | Effort Range |
+|--------|------|-------|-----------|--------------|
+| 1.1 | Sidebar Text Input Component | UI | 6 | 1-2 days |
+
+| # | Increment | Effort | Value | Risk | Strategy | Notes |
+|----|-----------|--------|-------|------|----------|-------|
+| 1.1.1 ⭐ | Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 | Minimal→Enhanced | Notes |
+```
+
+The parser automatically:
+- Detects step IDs in any column
+- Handles increments with IDs and titles in separate or combined columns
+- Removes emojis and markdown formatting
+- Links increments to their parent steps
+
+See `example-markdown.md` for a complete example.
 
 Built using [`create-miro-app`](https://www.npmjs.com/package/create-miro-app).
 
