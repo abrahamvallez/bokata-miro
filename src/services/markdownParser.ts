@@ -246,23 +246,23 @@ function categorizeTablesalt(tables: string[]): { stepsTable: string | null; inc
 }
 
 /**
- * Extract feature title from markdown (first H1 heading)
+ * Extract feature title from markdown (first heading of any level)
  * @param markdown The markdown string
- * @returns Feature title or empty string if not found
+ * @returns Feature title or default if not found
  */
 export function extractFeatureTitle(markdown: string): string {
   const lines = markdown.split('\n');
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    // Match H1 heading: # Title
-    const h1Match = trimmedLine.match(/^#\s+(.+)$/);
-    if (h1Match && h1Match[1]) {
-      return h1Match[1].trim();
+    // Match any heading level: # Title, ## Title, ### Title, etc.
+    const headingMatch = trimmedLine.match(/^#{1,6}\s+(.+)$/);
+    if (headingMatch && headingMatch[1]) {
+      return headingMatch[1].trim();
     }
   }
 
-  return 'Feature Breakdown'; // Default title if not found
+  return 'Untitled Feature'; // Default title if not found
 }
 
 /**

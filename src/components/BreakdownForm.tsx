@@ -1,7 +1,7 @@
 // Breakdown Form Component
 // Increments 1.1.1, 1.2.1, 1.3.1 - Textarea, validation, and submit button
 
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { validateMarkdown } from '../services/validation';
 import { parseMarkdown } from '../services/markdownParser';
 import { calculateAllBoardItems } from '../services/layoutEngine';
@@ -9,13 +9,13 @@ import { createAllBoardItems, createFrame, zoomToStickies } from '../services/mi
 
 const PLACEHOLDER_TEXT = 'Paste your feature breakdown markdown here...\n\nExample format:\n\n| # | Step ID | Name | Layer |\n|---|---------|------|-------|\n| 1 | 1.1 | Sidebar Text Input | UI |\n\n## Step 1.1: Sidebar Text Input\n\n| # | Increment | Effort | Value | Risk |\n|---|-----------|--------|-------|------|\n| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |';
 
-export const BreakdownForm = () => {
-  const [markdown, setMarkdown] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export const BreakdownForm: React.FC = () => {
+  const [markdown, setMarkdown] = React.useState<string>('');
+  const [error, setError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   // Validate on input change
-  useEffect(() => {
+  React.useEffect(() => {
     if (markdown.length > 0) {
       const result = validateMarkdown(markdown);
       setError(result.error);
@@ -47,15 +47,11 @@ export const BreakdownForm = () => {
         return;
       }
 
-      // Calculate positions for all board items (feature title + step headers + increments)
-      const boardItems = calculateAllBoardItems(
-        parsed.featureTitle,
-        parsed.steps,
-        parsed.increments
-      );
+      // Calculate positions for all board items (step headers + increments)
+      const boardItems = calculateAllBoardItems(parsed.steps, parsed.increments);
       console.log('Board items:', boardItems);
 
-      // Create all board items (title + headers + increments)
+      // Create all board items (headers + increments)
       const items = await createAllBoardItems(boardItems);
       console.log('Created items:', items);
 

@@ -46,5 +46,5 @@ export interface BoardItem {
   content: string;
   x: number;
   y: number;
-  type: 'feature-title' | 'step-header' | 'increment';
+  type: 'step-header' | 'increment';
 }

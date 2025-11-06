@@ -56,30 +56,9 @@ export async function createStickiesFromIncrements(
 /**
  * Create sticky note from board item with appropriate styling
  * @param item BoardItem with content, position, and type
- * @returns Created board item (sticky note or text)
+ * @returns Created sticky note object
  */
 export async function createBoardItem(item: BoardItem): Promise<any> {
-  // Handle feature title differently - create as text
-  if (item.type === 'feature-title') {
-    try {
-      const text = await miro.board.createText({
-        content: `<strong>${item.content}</strong>`,
-        x: item.x,
-        y: item.y,
-        style: {
-          fontSize: 32,
-          textAlign: 'center',
-        },
-        width: 800, // Wide enough for title
-      });
-      return text;
-    } catch (error) {
-      console.error('Error creating feature title:', error);
-      throw error;
-    }
-  }
-
-  // Create sticky notes for step headers and increments
   const config: any = {
     content: item.content,
     x: item.x,

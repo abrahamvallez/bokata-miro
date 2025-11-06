@@ -386,16 +386,14 @@ describe('Layout Engine - 4.2.1', () => {
       ];
 
       // WHEN: calculating all board items
-      const boardItems = calculateAllBoardItems('Test Feature', steps, increments);
+      const boardItems = calculateAllBoardItems(steps, increments);
 
-      // THEN: contains feature title, headers and increments
-      expect(boardItems.length).toBe(6); // 1 title + 2 headers + 3 increments
+      // THEN: contains both headers and increments
+      expect(boardItems.length).toBe(5); // 2 headers + 3 increments
 
-      const title = boardItems.filter(item => item.type === 'feature-title');
       const headers = boardItems.filter(item => item.type === 'step-header');
       const incs = boardItems.filter(item => item.type === 'increment');
 
-      expect(title).toHaveLength(1);
       expect(headers).toHaveLength(2);
       expect(incs).toHaveLength(3);
     });
@@ -408,14 +406,11 @@ describe('Layout Engine - 4.2.1', () => {
       ];
 
       // WHEN: creating board items
-      const boardItems = calculateAllBoardItems('Test Feature', steps, increments);
+      const boardItems = calculateAllBoardItems(steps, increments);
 
       // THEN: content formatted correctly
-      const title = boardItems.find(item => item.type === 'feature-title');
       const header = boardItems.find(item => item.type === 'step-header');
       const increment = boardItems.find(item => item.type === 'increment');
-
-      expect(title.content).toBe('Test Feature');
 
       expect(header.content).toContain('1.1');
       expect(header.content).toContain('Test Step');
@@ -437,9 +432,9 @@ describe('Layout Engine - 4.2.1', () => {
       ];
 
       // WHEN: calculating all positions
-      const boardItems = calculateAllBoardItems('Test Feature', steps, increments);
+      const boardItems = calculateAllBoardItems(steps, increments);
 
-      // THEN: no overlapping positions (title can overlap with increments as it's on a different row)
+      // THEN: no overlapping positions
       const positions = boardItems.map(item => `${item.x},${item.y}`);
       const uniquePositions = new Set(positions);
 

@@ -128,26 +128,16 @@ export function calculateStepHeaderPositions(steps: Step[]): BoardItem[] {
 }
 
 /**
- * Calculate positions for all board items (feature title + step headers + increments)
- * @param featureTitle The feature title
+ * Calculate positions for all board items (step headers + increments)
  * @param steps Array of steps
  * @param increments Array of increments
  * @returns Array of all board items with positions and types
  */
 export function calculateAllBoardItems(
-  featureTitle: string,
   steps: Step[],
   increments: Increment[]
 ): BoardItem[] {
   const boardItems: BoardItem[] = [];
-
-  // Add feature title at the top center
-  boardItems.push({
-    content: featureTitle,
-    x: START_X,
-    y: TITLE_Y_OFFSET,
-    type: 'feature-title' as const,
-  });
 
   // Add step headers
   const stepHeaders = calculateStepHeaderPositions(steps);
