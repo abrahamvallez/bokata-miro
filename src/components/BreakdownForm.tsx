@@ -6,6 +6,7 @@ import { validateMarkdown } from '../services/validation';
 import { parseMarkdown } from '../services/markdownParser';
 import { calculateAllBoardItems } from '../services/layoutEngine';
 import { createAllBoardItems, createFrame, zoomToStickies } from '../services/miroAPI';
+import { adjustPositionsForCollisions } from '../services/collisionDetection';
 
 const PLACEHOLDER_TEXT = 'Paste your feature breakdown markdown here...\n\nExample format:\n\n| # | Step ID | Name | Layer |\n|---|---------|------|-------|\n| 1 | 1.1 | Sidebar Text Input | UI |\n\n## Step 1.1: Sidebar Text Input\n\n| # | Increment | Effort | Value | Risk |\n|---|-----------|--------|-------|------|\n| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |';
 
@@ -51,8 +52,12 @@ export const BreakdownForm: React.FC = () => {
       const boardItems = calculateAllBoardItems(parsed.steps, parsed.increments);
       console.log('Board items:', boardItems);
 
+      // Adjust positions to avoid collisions with existing elements
+      const adjustedBoardItems = await adjustPositionsForCollisions(boardItems);
+      console.log('Adjusted board items:', adjustedBoardItems);
+
       // Create all board items (headers + increments)
-      const items = await createAllBoardItems(boardItems);
+      const items = await createAllBoardItems(adjustedBoardItems);
       console.log('Created items:', items);
 
       // Create frame to wrap all items
