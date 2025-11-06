@@ -25,6 +25,33 @@
   This generates a static output inside [`dist/`](./dist), which you can host on a static hosting
   service.
 
+### Testing
+
+The project includes a comprehensive test suite with **64 passing tests** covering all Walking Skeleton increments.
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+**Test Coverage:**
+- ✅ Validation service (10 tests)
+- ✅ Markdown parser (18 tests)
+- ✅ Sticky formatter (11 tests)
+- ✅ Layout engine (14 tests)
+- ✅ Integration tests (11 tests)
+
+See [TEST_COVERAGE.md](./TEST_COVERAGE.md) for detailed test documentation.
+
 ### Folder structure
 
 ```

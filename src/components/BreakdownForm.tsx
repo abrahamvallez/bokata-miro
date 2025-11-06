@@ -7,20 +7,7 @@ import { parseMarkdown } from '../services/markdownParser';
 import { calculatePositions } from '../services/layoutEngine';
 import { createStickiesFromIncrements, zoomToStickies } from '../services/miroAPI';
 
-const PLACEHOLDER_TEXT = `Paste your feature breakdown markdown here...
-
-Example format:
-
-| # | Step ID | Name | Layer |
-|---|---------|------|-------|
-| 1 | 1.1 | Sidebar Text Input | UI |
-
-## Step 1.1: Sidebar Text Input
-
-| # | Increment | Effort | Value | Risk |
-|---|-----------|--------|-------|------|
-| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |
-`;
+const PLACEHOLDER_TEXT = 'Paste your feature breakdown markdown here...\n\nExample format:\n\n| # | Step ID | Name | Layer |\n|---|---------|------|-------|\n| 1 | 1.1 | Sidebar Text Input | UI |\n\n## Step 1.1: Sidebar Text Input\n\n| # | Increment | Effort | Value | Risk |\n|---|-----------|--------|-------|------|\n| 1 | **1.1.1** - Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 |';
 
 export const BreakdownForm: React.FC = () => {
   const [markdown, setMarkdown] = React.useState<string>('');
