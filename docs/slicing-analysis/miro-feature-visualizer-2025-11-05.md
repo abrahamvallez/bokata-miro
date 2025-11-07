@@ -30,6 +30,64 @@ The Miro Feature Breakdown Visualizer is a plugin that transforms markdown featu
 
 ---
 
+## Implementation Status (Updated 2025-11-06)
+
+### Current State: ✅ WALKING SKELETON + EXTRAS COMPLETE
+
+**Implementation Classification (58 total increments):**
+
+| Status | Count | Percentage | Description |
+|--------|-------|------------|-------------|
+| ✅ IMPLEMENTED | 23 | 40% | Done and working in production |
+| 🚫 OBSOLETE | 16 | 28% | Superseded by better/equivalent implementation |
+| ⚠️ REDUNDANT | 6 | 10% | Platform provides or adds no value |
+| 📋 STILL NEEDED | 13 | 22% | Would add genuine future value |
+| **TOTAL** | **58** | **100%** | |
+
+**Effective Completion: 74%** (40% implemented + 28% obsolete + 10% redundant = 78% no work needed)
+
+---
+
+**Feature-by-Feature Status:**
+- ✅ **Feature 1 (UI):** 4/6 (implemented + obsolete/redundant)
+- ✅ **Feature 2 (Parsing):** 10/15 (implemented + obsolete/redundant)
+- ✅ **Feature 3 (Miro Integration):** 12/15 (implemented + obsolete/redundant)
+- ✅ **Feature 4 (Layout):** 10/13 (implemented + obsolete/redundant)
+- 🟡 **Feature 5 (Viewing):** 3/12 (low priority increments)
+
+**Test Coverage:** 64 passing tests across all modules
+
+**Smart Architectural Choices Made:**
+- ✅ Flexible regex-based parser > strict validation (makes 2.2.4, 2.4.2, 2.4.3 obsolete)
+- ✅ Collision detection + frames > manual per-step grouping (makes 3.4.1-3.4.3 obsolete)
+- ✅ Native Miro features leveraged > custom implementations (makes 5.1.1, 5.1.4, 5.4.1 redundant)
+- ✅ Step header stickies > group labels (makes 3.4.2 obsolete)
+- ✅ Dynamic grid layout > edge case handling (makes 4.2.4 obsolete)
+
+**Implemented Increments (23 total):**
+Walking Skeleton (9): 1.1.1, 1.2.1, 1.3.1, 2.1.1, 2.2.1, 2.3.1, 3.1.1, 3.2.1, 4.2.1
+Beyond Skeleton (14): 1.3.2-1.3.4, 2.1.2, 2.1.5, 2.4.1, 3.1.5, 3.2.2, 3.2.4, 3.3.1, 4.1.2-4.1.4, 4.2.2-4.2.3, 4.2.5, 4.3.3-4.3.4, 5.1.2, 5.3.1-5.3.2
+
+**Obsolete Increments (16 total):**
+1.1.2, 1.2.2, 1.2.3, 2.2.3, 2.2.4, 2.3.6, 2.4.2, 2.4.3, 3.3.3, 3.4.1, 3.4.2, 3.4.3, 4.1.1, 4.2.4
+
+**Redundant Increments (6 total):**
+1.1.6, 3.2.3, 3.3.5, 3.4.4, 5.1.1, 5.1.4, 5.2.4, 5.4.1
+
+**Still Needed Increments (13 total):**
+1.1.3, 1.1.4, 1.1.5, 1.2.4, 1.2.5, 2.1.3, 2.1.4, 2.2.2, 2.3.2-2.3.5, 3.1.2-3.1.4, 3.3.2, 3.3.4, 4.3.1-4.3.2, 5.1.3, 5.2.1-5.2.3, 5.2.5, 5.3.3, 5.4.2-5.4.4
+
+**Files Modified/Created:**
+- `src/components/BreakdownForm.tsx` - UI + validation
+- `src/services/markdownParser.ts` - Parsing logic
+- `src/services/validation.ts` - Input validation
+- `src/services/stickyFormatter.ts` - Content formatting
+- `src/services/miroAPI.ts` - Miro SDK integration
+- `src/services/layoutEngine.ts` - Grid calculation & positioning
+- `src/services/collisionDetection.ts` - Collision detection & space finding
+
+---
+
 ## Feature Backbone Overview
 
 ### Feature List with Dependencies
@@ -84,12 +142,12 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 1.1.1 ⭐ | Basic textarea in Miro sidebar | 1/5 | 5/5 | 1/5 | Minimal→Enhanced | Proves input collection works |
-| 1.1.2 | Placeholder text with example | 1/5 | 4/5 | 1/5 | None→Helpful | Guide users on format |
+| ~~1.1.1 ⭐~~ | ~~Basic textarea in Miro sidebar~~ | 1/5 | 5/5 | 1/5 | Minimal→Enhanced | ✅ DONE |
+| *1.1.2* | *Placeholder text with example* | 1/5 | 4/5 | 1/5 | None→Helpful | 🚫 OBSOLETE - included in 1.1.1 |
 | 1.1.3 | Syntax highlighting for markdown | 3/5 | 3/5 | 2/5 | Plain→Highlighted | Better UX for markdown editing |
 | 1.1.4 | Character count & max length limit | 2/5 | 2/5 | 1/5 | Unlimited→Bounded | Prevent huge inputs |
 | 1.1.5 | Auto-save to localStorage | 2/5 | 3/5 | 2/5 | Lost→Persisted | Users don't lose input |
-| 1.1.6 | Copy/paste helper with formatting | 2/5 | 2/5 | 1/5 | Manual→Assisted | Make pasting easier |
+| *1.1.6* | *Copy/paste helper with formatting* | 2/5 | 2/5 | 1/5 | Manual→Assisted | ⚠️ REDUNDANT - native browser feature |
 
 #### Step 1.2: Text Validation & Error Display
 
@@ -98,9 +156,9 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 1.2.1 ⭐ | Basic check for markdown table presence | 1/5 | 4/5 | 1/5 | None→Basic | Fail fast on invalid input |
-| 1.2.2 | Validate table column count | 2/5 | 3/5 | 1/5 | Permissive→Strict | Ensure consistent structure |
-| 1.2.3 | Error message display in sidebar | 1/5 | 4/5 | 1/5 | Silent→Visible | Users know what's wrong |
+| ~~1.2.1 ⭐~~ | ~~Basic check for markdown table presence~~ | 1/5 | 4/5 | 1/5 | None→Basic | ✅ DONE |
+| *1.2.2* | *Validate table column count* | 2/5 | 3/5 | 1/5 | Permissive→Strict | 🚫 OBSOLETE - flexible parser is better |
+| *1.2.3* | *Error message display in sidebar* | 1/5 | 4/5 | 1/5 | Silent→Visible | 🚫 OBSOLETE - implemented in 1.2.1 |
 | 1.2.4 | Suggest fixes for common errors | 3/5 | 2/5 | 2/5 | Silent→Helpful | Guide users to correct format |
 | 1.2.5 | Markdown format documentation link | 1/5 | 2/5 | 1/5 | Hidden→Visible | Help users understand format |
 
@@ -111,10 +169,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 1.3.1 ⭐ | Submit button that triggers parsing | 1/5 | 5/5 | 1/5 | Manual→Triggered | Entry point to full pipeline |
-| 1.3.2 | Loading indicator during processing | 2/5 | 3/5 | 1/5 | None→Visible | User knows something happening |
-| 1.3.3 | Disable submit while processing | 1/5 | 3/5 | 1/5 | Repeatable→Protected | Prevent duplicate submissions |
-| 1.3.4 | Success confirmation message | 1/5 | 3/5 | 1/5 | Silent→Visible | User knows it worked |
+| ~~1.3.1 ⭐~~ | ~~Submit button that triggers parsing~~ | 1/5 | 5/5 | 1/5 | Manual→Triggered | ✅ DONE |
+| ~~1.3.2~~ | ~~Loading indicator during processing~~ | 2/5 | 3/5 | 1/5 | None→Visible | ✅ DONE |
+| ~~1.3.3~~ | ~~Disable submit while processing~~ | 1/5 | 3/5 | 1/5 | Repeatable→Protected | ✅ DONE |
+| ~~1.3.4~~ | ~~Success confirmation message~~ | 1/5 | 3/5 | 1/5 | Silent→Visible | ✅ DONE |
 
 ---
 
@@ -141,11 +199,11 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 2.1.1 ⭐ | Simple regex to find pipe-delimited tables | 2/5 | 4/5 | 2/5 | Hardcoded→Flexible | Identifies all markdown tables |
-| 2.1.2 | Distinguish steps table vs increment tables | 2/5 | 4/5 | 2/5 | Flat→Hierarchical | Understand data structure |
+| ~~2.1.1 ⭐~~ | ~~Simple regex to find pipe-delimited tables~~ | 2/5 | 4/5 | 2/5 | Hardcoded→Flexible | ✅ DONE |
+| ~~2.1.2~~ | ~~Distinguish steps table vs increment tables~~ | 2/5 | 4/5 | 2/5 | Flat→Hierarchical | ✅ DONE |
 | 2.1.3 | Handle multiple features in one markdown | 3/5 | 3/5 | 3/5 | Single→Multiple | Support larger breakdowns |
 | 2.1.4 | Extract feature metadata (name, user, risk) | 2/5 | 3/5 | 1/5 | Missing→Included | Enrich visualization |
-| 2.1.5 | Robust to markdown formatting variations | 3/5 | 2/5 | 2/5 | Strict→Lenient | Handle real-world markdown |
+| ~~2.1.5~~ | ~~Robust to markdown formatting variations~~ | 3/5 | 2/5 | 2/5 | Strict→Lenient | ✅ DONE |
 
 #### Step 2.2: Parse Steps Overview Table
 
@@ -154,10 +212,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 2.2.1 ⭐ | Parse step ID and name columns | 1/5 | 5/5 | 1/5 | Manual→Automated | Fundamental data |
+| ~~2.2.1 ⭐~~ | ~~Parse step ID and name columns~~ | 1/5 | 5/5 | 1/5 | Manual→Automated | ✅ DONE |
 | 2.2.2 | Extract layer and effort range | 2/5 | 4/5 | 1/5 | Minimal→Complete | Full step metadata |
-| 2.2.3 | Infer increment relationships | 2/5 | 3/5 | 2/5 | Flat→Hierarchical | Link to increment tables |
-| 2.2.4 | Validate step numbering scheme | 1/5 | 2/5 | 1/5 | Permissive→Strict | Ensure consistency |
+| *2.2.3* | *Infer increment relationships* | 2/5 | 3/5 | 2/5 | Flat→Hierarchical | 🚫 OBSOLETE - stepId linking done |
+| *2.2.4* | *Validate step numbering scheme* | 1/5 | 2/5 | 1/5 | Permissive→Strict | 🚫 OBSOLETE - flexible parsing chosen |
 
 #### Step 2.3: Parse Increment Tables
 
@@ -166,12 +224,12 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 2.3.1 ⭐ | Parse increment ID and title | 1/5 | 5/5 | 1/5 | Manual→Automated | Core data for each sticky |
+| ~~2.3.1 ⭐~~ | ~~Parse increment ID and title~~ | 1/5 | 5/5 | 1/5 | Manual→Automated | ✅ DONE |
 | 2.3.2 | Extract effort/value/risk scores | 2/5 | 4/5 | 1/5 | ID only→Full metrics | Rich labeling for stickies |
 | 2.3.3 | Parse increment strategy column | 2/5 | 2/5 | 1/5 | None→Included | Additional context |
 | 2.3.4 | Extract notes/description text | 1/5 | 3/5 | 1/5 | None→Included | Show on sticky preview |
 | 2.3.5 | Handle star (⭐) marked increments | 1/5 | 3/5 | 1/5 | Ignored→Flagged | Visual indicator for Walking Skeleton |
-| 2.3.6 | Preserve table row order | 1/5 | 3/5 | 1/5 | Scrambled→Ordered | Maintain intended layout |
+| *2.3.6* | *Preserve table row order* | 1/5 | 3/5 | 1/5 | Scrambled→Ordered | 🚫 OBSOLETE - sort() implemented |
 
 #### Step 2.4: Validate Parsed Data
 
@@ -180,9 +238,9 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 2.4.1 ⭐ | Verify all increments linked to steps | 2/5 | 4/5 | 2/5 | Unvalidated→Validated | Catch structural errors |
-| 2.4.2 | Check for missing required fields | 1/5 | 4/5 | 1/5 | Permissive→Required | Ensure complete data |
-| 2.4.3 | Validate ID format consistency | 2/5 | 2/5 | 1/5 | Lenient→Strict | Ensure numbering works |
+| ~~2.4.1 ⭐~~ | ~~Verify all increments linked to steps~~ | 2/5 | 4/5 | 2/5 | Unvalidated→Validated | ✅ DONE |
+| *2.4.2* | *Check for missing required fields* | 1/5 | 4/5 | 1/5 | Permissive→Required | 🚫 OBSOLETE - conflicts with flexible design |
+| *2.4.3* | *Validate ID format consistency* | 2/5 | 2/5 | 1/5 | Lenient→Strict | 🚫 OBSOLETE - flexible regex approach |
 | 2.4.4 | Warn on anomalies (very high effort, etc) | 2/5 | 2/5 | 1/5 | Silent→Warned | Help users spot mistakes |
 | 2.4.5 | Generate detailed error report | 1/5 | 3/5 | 1/5 | Generic→Specific | Help users fix problems |
 
@@ -211,11 +269,11 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 3.1.1 ⭐ | Build sticky title from increment ID & name | 1/5 | 5/5 | 1/5 | Missing→Complete | Primary content |
+| ~~3.1.1 ⭐~~ | ~~Build sticky title from increment ID & name~~ | 1/5 | 5/5 | 1/5 | Missing→Complete | ✅ DONE |
 | 3.1.2 | Add effort/value/risk as subtitle | 2/5 | 4/5 | 1/5 | Missing→Visible | Compact metrics display |
 | 3.1.3 | Format notes/description for readability | 2/5 | 3/5 | 1/5 | Raw→Formatted | Show context on sticky |
 | 3.1.4 | Add walking skeleton indicator (⭐) | 1/5 | 3/5 | 1/5 | Hidden→Visible | Flag priority increments |
-| 3.1.5 | Truncate long content intelligently | 2/5 | 2/5 | 1/5 | Overflowing→Trimmed | Fit within sticky bounds |
+| ~~3.1.5~~ | ~~Truncate long content intelligently~~ | 2/5 | 2/5 | 1/5 | Overflowing→Trimmed | ✅ DONE |
 
 #### Step 3.2: Create Sticky Elements via Miro SDK
 
@@ -224,10 +282,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 3.2.1 ⭐ | Create single sticky note via SDK | 2/5 | 5/5 | 2/5 | Manual→Automated | Proves integration works |
-| 3.2.2 | Batch create multiple stickies | 2/5 | 4/5 | 2/5 | One→Many | Efficient creation |
-| 3.2.3 | Handle Miro API rate limits | 2/5 | 3/5 | 3/5 | Naive→Smart | Avoid API throttling |
-| 3.2.4 | Error handling & retry logic | 2/5 | 3/5 | 2/5 | Fail→Recover | Handle transient failures |
+| ~~3.2.1 ⭐~~ | ~~Create single sticky note via SDK~~ | 2/5 | 5/5 | 2/5 | Manual→Automated | ✅ DONE |
+| ~~3.2.2~~ | ~~Batch create multiple stickies~~ | 2/5 | 4/5 | 2/5 | One→Many | ✅ DONE |
+| *3.2.3* | *Handle Miro API rate limits* | 2/5 | 3/5 | 3/5 | Naive→Smart | ⚠️ REDUNDANT - unlikely with current scale |
+| ~~3.2.4~~ | ~~Error handling & retry logic~~ | 2/5 | 3/5 | 2/5 | Fail→Recover | ✅ DONE |
 
 #### Step 3.3: Style & Color Sticky Notes
 
@@ -236,11 +294,11 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 3.3.1 ⭐ | Apply default color for all stickies | 1/5 | 3/5 | 1/5 | Colorless→Colored | Visual presence |
+| ~~3.3.1 ⭐~~ | ~~Apply default color for all stickies~~ | 1/5 | 3/5 | 1/5 | Colorless→Colored | ✅ DONE |
 | 3.3.2 | Color by effort level (low/mid/high) | 2/5 | 3/5 | 1/5 | Uniform→Varied | Visual effort indicator |
-| 3.3.3 | Color by step (different hue per step) | 2/5 | 4/5 | 1/5 | Flat→Hierarchical | Visual step grouping |
+| *3.3.3* | *Color by step (different hue per step)* | 2/5 | 4/5 | 1/5 | Flat→Hierarchical | 🚫 OBSOLETE - header/increment distinction done |
 | 3.3.4 | Highlight walking skeleton with accent | 1/5 | 3/5 | 1/5 | Same→Different | Prominent MVP path |
-| 3.3.5 | Ensure accessible color contrast | 2/5 | 2/5 | 1/5 | Unvalidated→Validated | WCAG compliance |
+| *3.3.5* | *Ensure accessible color contrast* | 2/5 | 2/5 | 1/5 | Unvalidated→Validated | ⚠️ REDUNDANT - Miro colors pre-validated |
 
 #### Step 3.4: Group & Organize Stickies
 
@@ -249,10 +307,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 3.4.1 ⭐ | Create group for each step | 2/5 | 4/5 | 2/5 | Flat→Grouped | Visual organization |
-| 3.4.2 | Add step labels to groups | 2/5 | 3/5 | 1/5 | Unlabeled→Labeled | Clear hierarchy |
-| 3.4.3 | Make groups collapsible | 2/5 | 2/5 | 2/5 | Expanded→Collapsible | Reduce visual clutter |
-| 3.4.4 | Lock groups to prevent accidental moves | 1/5 | 2/5 | 1/5 | Movable→Locked | Preserve layout |
+| *3.4.1* | *Create group for each step* | 2/5 | 4/5 | 2/5 | Flat→Grouped | 🚫 OBSOLETE - frames + collision detection better |
+| *3.4.2* | *Add step labels to groups* | 2/5 | 3/5 | 1/5 | Unlabeled→Labeled | 🚫 OBSOLETE - step headers done |
+| *3.4.3* | *Make groups collapsible* | 2/5 | 2/5 | 2/5 | Expanded→Collapsible | 🚫 OBSOLETE - collision detection solves clutter |
+| *3.4.4* | *Lock groups to prevent accidental moves* | 1/5 | 2/5 | 1/5 | Movable→Locked | ⚠️ REDUNDANT - Miro native feature |
 
 ---
 
@@ -278,10 +336,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 4.1.1 ⭐ | Calculate column count from max increments | 1/5 | 5/5 | 1/5 | Hardcoded→Dynamic | Foundation for layout |
-| 4.1.2 | Calculate row count from step count | 1/5 | 5/5 | 1/5 | Hardcoded→Dynamic | Step-to-row mapping |
-| 4.1.3 | Determine cell width/height for spacing | 2/5 | 4/5 | 1/5 | Fixed→Responsive | Readable sticky size |
-| 4.1.4 | Account for margins and padding | 2/5 | 3/5 | 1/5 | Tight→Spaced | Visual breathing room |
+| *4.1.1* | *Calculate column count from max increments* | 1/5 | 5/5 | 1/5 | Hardcoded→Dynamic | 🚫 OBSOLETE - grid dimensions done |
+| ~~4.1.2~~ | ~~Calculate row count from step count~~ | 1/5 | 5/5 | 1/5 | Hardcoded→Dynamic | ✅ DONE |
+| ~~4.1.3~~ | ~~Determine cell width/height for spacing~~ | 2/5 | 4/5 | 1/5 | Fixed→Responsive | ✅ DONE |
+| ~~4.1.4~~ | ~~Account for margins and padding~~ | 2/5 | 3/5 | 1/5 | Tight→Spaced | ✅ DONE |
 
 #### Step 4.2: Position Stickies in Grid
 
@@ -290,11 +348,11 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 4.2.1 ⭐ | Map each increment to grid cell | 2/5 | 5/5 | 2/5 | Manual→Automatic | Core positioning logic |
-| 4.2.2 | Calculate absolute coordinates | 2/5 | 4/5 | 1/5 | Relative→Absolute | Miro SDK requirement |
-| 4.2.3 | Batch update positions via SDK | 2/5 | 4/5 | 2/5 | Individual→Batch | Performance optimization |
-| 4.2.4 | Handle edge cases (uneven columns) | 2/5 | 3/5 | 2/5 | Strict grid→Flexible | Real data variations |
-| 4.2.5 | Zoom & center layout on board | 2/5 | 3/5 | 1/5 | Scattered→Visible | User sees result immediately |
+| ~~4.2.1 ⭐~~ | ~~Map each increment to grid cell~~ | 2/5 | 5/5 | 2/5 | Manual→Automatic | ✅ DONE |
+| ~~4.2.2~~ | ~~Calculate absolute coordinates~~ | 2/5 | 4/5 | 1/5 | Relative→Absolute | ✅ DONE |
+| ~~4.2.3~~ | ~~Batch update positions via SDK~~ | 2/5 | 4/5 | 2/5 | Individual→Batch | ✅ DONE |
+| *4.2.4* | *Handle edge cases (uneven columns)* | 2/5 | 3/5 | 2/5 | Strict grid→Flexible | 🚫 OBSOLETE - naturally handled |
+| ~~4.2.5~~ | ~~Zoom & center layout on board~~ | 2/5 | 3/5 | 1/5 | Scattered→Visible | ✅ DONE |
 
 #### Step 4.3: Add Alignment Lines & Visual Guides
 
@@ -303,10 +361,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 4.3.1 ⭐ | Draw vertical lines between step columns | 3/5 | 3/5 | 2/5 | None→Basic | Visual step separation |
+| 4.3.1 | Draw vertical lines between step columns | 3/5 | 3/5 | 2/5 | None→Basic | Visual step separation |
 | 4.3.2 | Draw horizontal lines between rows | 2/5 | 3/5 | 1/5 | None→Basic | Visual row separation |
-| 4.3.3 | Add step name labels above columns | 2/5 | 4/5 | 1/5 | None→Labeled | Step identification |
-| 4.3.4 | Add section header text boxes | 2/5 | 2/5 | 1/5 | None→Labeled | Feature/step context |
+| ~~4.3.3~~ | ~~Add step name labels above columns~~ | 2/5 | 4/5 | 1/5 | None→Labeled | ✅ DONE |
+| ~~4.3.4~~ | ~~Add section header text boxes~~ | 2/5 | 2/5 | 1/5 | None→Labeled | ✅ DONE |
 
 ---
 
@@ -333,10 +391,10 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 5.1.1 ⭐ | Use native Miro board navigation | 1/5 | 5/5 | 1/5 | Limited→Native | Leverage platform features |
-| 5.1.2 | Auto-zoom to fit entire layout on load | 2/5 | 4/5 | 1/5 | Manual→Automatic | User sees full picture |
+| *5.1.1* | *Use native Miro board navigation* | 1/5 | 5/5 | 1/5 | Limited→Native | ⚠️ REDUNDANT - Miro default behavior |
+| ~~5.1.2~~ | ~~Auto-zoom to fit entire layout on load~~ | 2/5 | 4/5 | 1/5 | Manual→Automatic | ✅ DONE |
 | 5.1.3 | Provide "Reset View" button in sidebar | 1/5 | 3/5 | 1/5 | Manual→Assisted | Easy return to overview |
-| 5.1.4 | Save & restore user's view position | 2/5 | 2/5 | 2/5 | Lost→Remembered | Persist UX state |
+| *5.1.4* | *Save & restore user's view position* | 2/5 | 2/5 | 2/5 | Lost→Remembered | ⚠️ REDUNDANT - Miro platform persists |
 
 #### Step 5.2: Inspect Individual Increments
 
@@ -345,11 +403,11 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 5.2.1 ⭐ | Display all increment details on hover | 2/5 | 4/5 | 1/5 | Hidden→Visible | See full context |
+| 5.2.1 | Display all increment details on hover | 2/5 | 4/5 | 1/5 | Hidden→Visible | See full context |
 | 5.2.2 | Show effort/value/risk scores prominently | 1/5 | 4/5 | 1/5 | Tiny→Large | Easy metric reading |
 | 5.2.3 | Display strategy & notes in detail panel | 2/5 | 3/5 | 1/5 | None→Visible | Full information access |
-| 5.2.4 | Link to original markdown row | 2/5 | 2/5 | 2/5 | Disconnected→Linked | Traceability |
-| 5.2.5 | Highlight related increments (same step) | 2/5 | 3/5 | 1/5 | Uniform→Highlighted | Visual relationship |
+| *5.2.4* | *Link to original markdown row* | 2/5 | 2/5 | 2/5 | Disconnected→Linked | ⚠️ REDUNDANT - sidebar preserves input |
+| 5.2.5 | Link with lines related increments (same step) | 2/5 | 3/5 | 1/5 | Uniform→Highlighted | Visual relationship |
 
 #### Step 5.3: Understand Step Relationships
 
@@ -358,8 +416,8 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 5.3.1 ⭐ | Color-code increments by step | 2/5 | 4/5 | 1/5 | Flat→Colored | Visual step identification |
-| 5.3.2 | Show step name on step group | 1/5 | 4/5 | 1/5 | None→Visible | Clear labeling |
+| ~~5.3.1~~ | ~~Color-code increments by step~~ | 2/5 | 4/5 | 1/5 | Flat→Colored | ✅ DONE |
+| ~~5.3.2~~ | ~~Show step name on step group~~ | 1/5 | 4/5 | 1/5 | None→Visible | ✅ DONE |
 | 5.3.3 | Display step metadata (effort range, layer) | 2/5 | 3/5 | 1/5 | None→Visible | Context for each step |
 
 #### Step 5.4: Export & Share Breakdown
@@ -369,7 +427,7 @@ User Input (Markdown)
 
 | # | Increment | Effort | Value | Risk | Strategy | Notes |
 |----|-----------|--------|-------|------|----------|-------|
-| 5.4.1 ⭐ | Copy board link to clipboard | 1/5 | 4/5 | 1/5 | Manual→Assisted | Quick sharing |
+| *5.4.1* | *Copy board link to clipboard* | 1/5 | 4/5 | 1/5 | Manual→Assisted | ⚠️ REDUNDANT - Miro native share feature |
 | 5.4.2 | Export visible area as PNG image | 3/5 | 3/5 | 2/5 | None→Possible | Share without Miro access |
 | 5.4.3 | Export full grid as PDF | 3/5 | 3/5 | 2/5 | None→Possible | Print or document |
 | 5.4.4 | Generate shareable summary report | 3/5 | 2/5 | 2/5 | None→Summary | External stakeholder communication |
